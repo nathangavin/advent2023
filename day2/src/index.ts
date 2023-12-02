@@ -4,45 +4,45 @@ const file = readFileSync('input.txt', 'utf-8');
 
 const lines = file.split('\n');
 
-
-let max = new Map<string, number>();
-max.set('red', 12);
-max.set('green', 13);
-max.set('blue', 14);
-
-let totalIds = 0;
+let maxMap = new Map<string,number>();
+maxMap.set('red', 0);
+maxMap.set('green', 0);
+maxMap.set('blue', 0);
+let totalPowers = 0;
 
 for (const line of lines) {
     if (line.trim().length == 0) continue;
-    let [game, results] = line.split(':');
-    let [_, id] = game.split(' ');
+    let [_, results] = line.split(':');
     
+    maxMap.set('red', 0);
+    maxMap.set('green', 0);
+    maxMap.set('blue', 0);
     let turns = results.split(';');
-    
-    let isPossible = true;
 
     for (const turn of turns) {
         let cubeTypes = turn.split(',');
 
         for (const cubeType of cubeTypes) {
             let [amount, type] = cubeType.trim().split(' ');
-            if (max.has(type)) {
-                let maxC = max.get(type);
-                let numA = +amount;
-                if (typeof maxC == 'number' && maxC < numA) {
-                    isPossible = false;
-                    break;
+            if (maxMap.has(type)) {
+                let currentMax = maxMap.get(type);
+                if (typeof currentMax == 'number' && +amount > currentMax) {
+                    maxMap.set(type, +amount);
                 }
             }
         }
-        if (!isPossible) {
-            break;
-        }
     }
 
-    if (isPossible) {
-        totalIds += +id;
+    let maxR = maxMap.get('red');
+    let maxG = maxMap.get('green');
+    let maxB = maxMap.get('blue');
+
+    if (typeof maxR == 'number' &&
+            typeof maxG == 'number' &&
+            typeof maxB == 'number') {
+
+        totalPowers += maxR * maxG * maxB;
     }
 }
 
-console.log(totalIds);
+console.log(totalPowers);
