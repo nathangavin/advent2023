@@ -38,38 +38,110 @@ for (let i = 0; i < 7; i++) {
     
     linePos++;
 }
+let ranges : Array<[number,number]> = [];
 
-let smallestDest = Number.MAX_SAFE_INTEGER;
-
-for (const seed of seeds) {
-    let workingNumber = seed;
-    for (const transformation of transformations) {
-        workingNumber = transformNumber(workingNumber, transformation);
-    }
-    smallestDest = workingNumber < smallestDest ? workingNumber : smallestDest;
+for (let i = 0; i < seeds.length; i += 2) {
+    ranges.push([seeds[i], seeds[i] + seeds[i + 1] - 1]);
 }
 
-console.log(smallestDest);
-
-function transformNumber(n : number, t : Map<number, [number, number]>) : number {
+for (let i = 0; i < transformations.length; i++) {
     
-    let returnable = n;
+    let nextRanges : Array<[number,number]> = [];
+    for (const range of ranges) {
+        nextRanges.push(...transformRange(range[0], range[1], transformations[i]));
+    }
+    ranges = nextRanges;
+    console.log(ranges);
+}
+let smallest = ranges.map(a => a[0]);
+
+console.log(Math.min(...smallest));
+function transformRange(first : number, 
+                        last : number, 
+                        t : Map<number, [number, number]>) : Array<[number, number]> {
     
     let keys = Array.from(t.keys());
+    
+    let returnable = new Array<[number,number]>();
 
-    if (n < keys[0]) {
-        return n;
-    }
+    let rangesToProcess = new Array<[number, number]>();
+    rangesToProcess.push([first, last]);
+    console.log(rangesToProcess);
+    let tRanges = new Array<[number,number,number]>();
     for (let i = 0; i < keys.length; i++) {
         let mapping = t.get(keys[i]);
-        if (Array.isArray(mapping) && mapping.length == 2) {
+        if (Array.isArray(mapping)) {
             let [destination, length] = mapping;
-            if (n >= keys[i] && n < keys[i] + length) {
-                let diff = destination - keys[i];
-                returnable += diff;
-                break;
+            let start = keys[i];
+            let end = start + length - 1;
+            let diff = destination - start;
+            tRanges.push([start, end, diff]);
+        }
+    }
+    while (rangesToProcess.length > 0) {
+        console.log('start');
+        console.log(t);
+        let range = rangesToProcess.pop();
+        if (Array.isArray(range)) {
+            let [f,l] = range;
+
+            console.log('tRanges');
+            console.log(tRanges);
+
+            let processed = false;
+
+            for (const tRange of tRanges) {
+                let [start, end, diff] = tRange;
+                console.log('s2');
+                console.log(range);
+                console.log(tRange);
+                console.log('e2');
+
+                if (f < start) {
+                    if (l < start) {
+                        console.log(1);
+                        continue;
+                    } else if (l >= start && l < end) {
+                        console.log(2);
+                        rangesToProcess.push([f, start - 1]);
+                        returnable.push([start + diff, l + diff]);
+                        processed = true;
+                        break;
+                    } else if (l > end) {
+                        console.log(3);
+                        rangesToProcess.push([f, start - 1]);
+                        rangesToProcess.push([end + 1, l]);
+                        returnable.push([start + diff, end + diff]);
+                        processed = true;
+                        break;
+                    }
+                } else if (f >= start && l <= end) {
+                    console.log(4);
+                    returnable.push([f + diff, l + diff]);
+                    processed = true;
+                    break;
+                } else if (f >= start && f <= end && l > end) {
+                    console.log(5);
+                    returnable.push([f + diff, end + diff]);
+                    rangesToProcess.push([end + 1, l]);
+                    processed = true;
+                    break;
+                } else if (f > end) {
+                    console.log(6);
+                    continue;
+                } else {
+                    console.log(7);
+                    continue;
+                }
+            }
+
+            if (!processed) {
+                returnable.push([f, l]);
             }
         }
+        console.log('ranges');
+        console.log(rangesToProcess);
+        console.log('end');
     }
 
     return returnable;
