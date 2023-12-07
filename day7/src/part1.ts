@@ -26,7 +26,7 @@ let cardValues = new Map<string,number>([
     ['8', 8],
     ['9', 9],
     ['T', 10],
-    ['J', 1],
+    ['J', 11],
     ['Q', 12],
     ['K', 13],
     ['A', 14]
@@ -119,32 +119,6 @@ function calculateHandType(hand : string) : HandType {
     console.log(cardsPresent);
     let cards = Array.from(cardsPresent.keys());
     let max = 0;
-    if (cardsPresent.has('J')) {
-        if (cards.length == 1) return HandType.FIVEKIND;
-
-        let maxCard = '';
-        let maxCardCount = 0;
-        for (const card of cards) {
-            if (card != 'J') {
-                let count = cardsPresent.get(card);
-                if (typeof count == 'number' && !isNaN(count)) {
-                    if (count > maxCardCount) {
-                        maxCardCount = count;
-                        maxCard = card;
-                    }
-                }
-            }
-        }
-
-        let numJs = cardsPresent.get('J');
-        if (typeof numJs == 'number' && !isNaN(numJs)) {
-            cardsPresent.set(maxCard, maxCardCount + numJs);
-            cardsPresent.delete('J');
-        }
-        
-        cards = Array.from(cardsPresent.keys());
-    } 
-
     switch (cards.length) {
         case 1:
             return HandType.FIVEKIND;
