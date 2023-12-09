@@ -17,16 +17,17 @@ for (const line of lines) {
     histories.push(history);
 }
 
+console.log(histories);
 let total = 0;
 for (const history of histories) {
     
-    let firsts = new Array<number>();
+    let lasts = new Array<number>();
 
     let calculating = true;
     
     let differences = history;
     while (calculating) {
-        firsts.push(differences[0]);
+        lasts.push(differences[differences.length - 1]);
         let allZeros = true; 
         let newDifferences = [];
         for (let i = 1; i < differences.length; i++) {
@@ -40,12 +41,9 @@ for (const history of histories) {
         }
     }
 
-
-    let runningTotal = firsts[firsts.length - 1];
-    for (let i = firsts.length - 2; i >= 0; i--) {
-        runningTotal = firsts[i] - runningTotal;
+    for (const last of lasts) {
+        total += last;
     }
-    total += runningTotal;
 }
 
 console.log(total);
