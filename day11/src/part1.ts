@@ -36,26 +36,21 @@ let extraRows = 0;
 let extraCols = 0;
 for (let i = 0; i < colEmpty.length; i++) {
     if (colEmpty[i]) {
-        extraCols += 999999;
+        extraCols++;
     }
     numExtraCols[i] = extraCols;
 }
 for (let i = 0; i < rowEmpty.length; i++) {
     if (rowEmpty[i]) {
-        extraRows += 999999;
+        extraRows++;
     }
     numExtraRows[i] = extraRows;
 }
 
-console.log(numExtraRows);
-console.log(numExtraCols);
-
-console.log(galaxyPositions);
 for (const galPos of galaxyPositions) {
     galPos[0] = galPos[0] + numExtraRows[galPos[0]];
     galPos[1] = galPos[1] + numExtraCols[galPos[1]];
 }
-console.log(galaxyPositions);
 
 
 let sumShortestPaths = 0;
